@@ -40,7 +40,7 @@ As hydrogen accumulates:
 
 - Reaction rates increase rapidly
 
-$$<\sigma v> \prop exp(-T^{-1/3})$$
+$$<\sigma v> \propto exp(-T^{-1/3})$$
 
 - Energy generation accelerates.
 
