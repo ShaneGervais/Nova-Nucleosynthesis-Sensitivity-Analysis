@@ -22,7 +22,7 @@ Has:
 
 - Thin hydrogen-rich accreted envelope
 
-The electron degenerate nature of the WD implies that $P\\approxP(\rho)$ and is largely independent of temperature; allowing temperature to increase without pressure regulation.
+The electron degenerate nature of the WD implies that $P \approx P(\rho)$ and is largely independent of temperature; allowing temperature to increase without pressure regulation.
 
 **Companion Star**
 
@@ -40,7 +40,7 @@ As hydrogen accumulates:
 
 - Reaction rates increase rapidly
 
-$$<\sigma v> \\prop exp(-T^{-1/3})$$
+$$<\sigma v> \prop exp(-T^{-1/3})$$
 
 - Energy generation accelerates.
 
