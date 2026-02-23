@@ -1,367 +1,204 @@
-## Nova Nucleosynthesis Sensitivity Analysis
-# NuGrid PPN Post-Processing Framework
+# Nova Nucleosynthesis Sensitivity Analysis
+## NuGrid PPN Post-Processing Framework
 
-## 1. Physics Overview
-# 1.1 Classical Novae
+# 1. Physics Overview
+## 1.1 Classical Novae
 
 A classical nova is a thermonuclear explosion occurring on the surface of a white dwarf in a close binary system.
 
-Binary System Components
+### Binary System Components
 
-White Dwarf (WD):
+**White Dwarf (WD):**
 
 Composed of either:
 
-CO (carbon–oxygen)
+- CO (carbon–oxygen)
 
-ONe (oxygen–neon–magnesium)
-
-Supported by electron degeneracy pressure
+- ONe (oxygen–neon–magnesium)
 
 Has:
 
-Degenerate core
+- Degenerate core
 
-Thin hydrogen-rich accreted envelope
+- Thin hydrogen-rich accreted envelope
 
-Electron degeneracy implies:
+The electron degenerate nature of the WD implies that $P\approxP(\rho)$ and is largely independent of temperature; allowing temperature to increase without pressure regulation.
 
-𝑃
-≈
-𝑃
-(
-𝜌
-)
-P≈P(ρ)
+**Companion Star**
 
-and is largely independent of temperature.
+Usually: a main sequence and hydrogen-rich star
 
-This allows:
+Mass transfer occurs via *Roche lobe overflow* forming an accretion disk and depositing stellar material onto the WD surface.
 
-Temperature to increase without pressure regulation.
-
-Companion Star
-
-Usually:
-
-Main sequence
-
-Hydrogen-rich
-
-Mass transfer occurs via:
-
-Roche lobe overflow
-
-Accretion disk formation
-
-Deposition of material onto WD surface
-
-1.2 Thermonuclear Runaway (TNR)
+## 1.2 Thermonuclear Runaway (TNR)
 
 As hydrogen accumulates:
 
-Compression increases temperature.
+- Compression increases temperature.
 
-CNO burning begins.
+- CNO burning begins (as a catalyst).
 
-Reaction rates increase rapidly:
+- Reaction rates increase rapidly
 
-⟨
-𝜎
-𝑣
-⟩
-∝
-exp
-⁡
-(
-−
-𝑇
-−
-1
-/
-3
-)
-⟨σv⟩∝exp(−T
-−1/3
-)
+$$<\sigma v> \prop exp(-T^{-1/3})$$
 
-Energy generation accelerates.
+- Energy generation accelerates.
 
-Degeneracy prevents expansion.
+- Degeneracy prevents expansion.
 
-Thermal runaway occurs.
+-> Thermal runaway occurs.
 
-Peak temperatures:
+Peak temperatures are around $T~0.1-0.4$ $GK$
 
-𝑇
-peak
-∼
-0.1
-−
-0.4
- GK
-T
-peak
-	​
+**Dominant burning regimes:**
 
-∼0.1−0.4 GK
+- Hot CNO cycle
 
-Dominant burning regimes:
+- Leakage into NeNa and MgAl cycles
 
-Hot CNO cycle
+- In hotter cases: flow toward Si–S–Ar region
 
-Leakage into NeNa and MgAl cycles
-
-In hotter cases: flow toward Si–S–Ar region
-
-2. NuGrid PPN Framework
+# 2. NuGrid PPN Framework
 
 NuGrid PPN is a post-processing nuclear reaction network.
 
 It solves:
 
-𝑑
-𝑌
-𝑖
-𝑑
-𝑡
-=
-∑
-𝑗
-𝑁
-𝑖
-𝑗
-𝐹
-𝑗
-dt
-dY
-i
-	​
-
-	​
-
-=
-j
-∑
-	​
-
-N
-ij
-	​
-
-F
-j
+$$\dot{Y_i} = \sum_j N_{ij}F_j
 	​
 
 
 where:
 
-𝑌
-𝑖
-=
-𝑋
-𝑖
-/
-𝐴
-𝑖
-Y
-i
-	​
+- $Y_i=X_i/A_i$ (abundance = mass_fraction/mass_number per baryon $i$)
+- $N_{ij}$ stoichiometric matrix for baryon $i$ and reaction $j$
+- $F_j$ reaction flux
 
-=X
-i
-	​
+e.g. For a two-body reaction (a+b):
 
-/A
-i
-	​
+$$F_j = \rho N_A <\sigma v>Y_a Y_b$$
 
- (abundance per baryon)
+with the rate coefficient usually in the form of:
 
-𝑁
-𝑖
-𝑗
-N
-ij
-	​
+$$N_A <\sigma v> = exp(a_0 + a_1 T^{-1} + a_2 T^{-1/3} + \dots)$$
 
- = stoichiometric matrix
+depending on experimentally found values for each coefficient $a_k$
 
-𝐹
-𝑗
-F
-j
-	​
+**PPN:**
 
- = reaction flux
+- Uses prescribed temperature-density trajectory $T(t)$, $\rho(t)$
 
-For a two-body reaction:
+- Evolves isotope abundances
 
-𝐹
-𝑗
-=
-𝜌
-𝑁
-𝐴
-⟨
-𝜎
-𝑣
-⟩
-𝑌
-𝑎
-𝑌
-𝑏
-F
-j
-	​
-
-=ρN
-A
-	​
-
-⟨σv⟩Y
-a
-	​
-
-Y
-b
-	​
-
-
-PPN:
-
-Uses prescribed temperature-density trajectory 
-𝑇
-(
-𝑡
-)
-,
-𝜌
-(
-𝑡
-)
-T(t),ρ(t)
-
-Evolves isotope abundances
-
-Does NOT solve hydrodynamics
+- Does NOT solve hydrodynamics
 
 It is strictly nuclear post-processing.
 
-3. Project Structure
-ppn_nova/
-│
-├── initial_abundance.dat
-├── trajectory.input
-├── ppn.exe
-├── runs/
-│   ├── baseline/
-│   ├── reaction_fact_X/
-│
-├── tools/
-│   ├── extract_final_iso.f90
-│   ├── batch_iso.f90
-│   ├── new_run.sh
-│
-└── analysis/
-    ├── abundance_io.py
-    ├── flux_isotope_io.py
-    ├── plot_initial_abundances.py
-    ├── plot_final.py
-    ├── plot_ratio.py
-    ├── plot_top_ratios.py
-    ├── compare_runs_isotope.py
-    ├── compare_A_less_than_40.py
-    ├── plot_flux_snapshot.py
-    ├── integrate_flux_over_run.py
-4. Tools Directory
-extract_final_iso.f90
+# 3. Personal working structure
+```
+{
+	ppn_nova/
+	│
+	├── initial_abundance.dat
+	├── trajectory.input
+	├── ppn.exe
+	├── runs/
+	│	├── baseline/
+	│	├── reaction_fact_X/
+	│
+	├── tools/
+	│   ├── extract_final_iso.f90
+	│   ├── batch_iso.f90
+	│   ├── new_run.sh
+	│
+	└── analysis/
+    	├── abundance_io.py
+    	├── flux_isotope_io.py
+    	├── plot_initial_abundances.py
+    	├── plot_final.py
+    	├── plot_ratio.py
+    	├── plot_top_ratios.py
+    	├── compare_runs_isotope.py
+    	├── compare_A_less_than_40.py
+    	├── plot_flux_snapshot.py
+    	├── integrate_flux_over_run.py
+}
+```
+# 4. Tools Directory
+
+`extract_final_iso.f90`
 
 Extracts final abundance summary from PPN output into:
 
-final_abundances.csv
-batch_iso.f90
+`final_abundances.csv`
+`batch_iso.f90`
 
 Extracts isotope time evolution data across time snapshots.
 
-new_run.sh
+`new_run.sh`
 
 Automates:
 
-Reaction rate multiplication
+- Reaction rate multiplication
 
-Directory creation
+- Directory creation
 
-Execution of PPN
+- Execution of PPN
 
-Organizing output
+- Organizing output
 
 These tools are required before running analysis scripts.
 
-5. Analysis Scripts Overview
-5.1 plot_initial_abundances.py
+# 5. Analysis Scripts Overview
+
+## 5.1 `plot_initial_abundances.py`
+
 Input
 
-initial_abundance.dat
+`initial_abundance.dat`
 
 Output
 
 Log-scale horizontal abundance plot
 
-Purpose
-
 Visualizes initial fuel composition:
 
-𝑋
-𝑖
-initial
-X
-i
-initial
-	​
-
+$$X_{i}^{initial}$$
 
 Physically shows:
 
-WD mixing signature
+- WD mixing signature
 
-Initial CNO catalyst abundance
+- Initial CNO catalyst abundance
 
-Metallic content
+- Metallic content
 
-5.2 plot_final.py
+## 5.2 `plot_final.py`
 Input
 
-runs/<run_name>/final_abundances.csv
+`runs/<run_name>/final_abundances.csv`
 
 Output
 
 Final abundance plot
 
-Purpose
-
 Displays:
 
-𝑋
-𝑖
-final
-X
-i
-final
+$$X_{i}^{final}$$
 	​
 
 
-Represents nucleosynthesis result after TNR.
+Represents nucleosynthesis result after **TNR**.
 
 Shows:
 
-Synthesized isotopes
+- Synthesized isotopes
 
-Destroyed isotopes
+- Destroyed isotopes
 
-Heavy-element production
+- Heavy-element production
 
-5.3 plot_ratio.py
+## 5.3 `plot_ratio.py`
 Input
 
 Initial abundances
@@ -372,248 +209,91 @@ Output
 
 Ratio plot:
 
-𝑋
-𝑓
-𝑋
-𝑖
-X
-i
-	​
+$$\frac{X_f}{X_i}$$
 
-X
-f
-	​
 
-	​
-
-Purpose
-
-Removes initial composition bias.
+Purpose: Removes initial composition bias.
 
 Identifies:
 
-Synthesized isotopes 
-𝑋
-𝑓
-/
-𝑋
-𝑖
->
-1
-X
-f
-	​
+- Synthesized isotopes $X_f/X_i > 1$
+- Destroyed isotopes $X_f/X_i < 1$
 
-/X
-i
-	​
-
->1
-
-Destroyed isotopes 
-𝑋
-𝑓
-/
-𝑋
-𝑖
-<
-1
-X
-f
-	​
-
-/X
-i
-	​
-
-<1
-
-5.4 plot_top_ratios.py
+## 5.4 `plot_top_ratios.py`
 Input
 
-Run directory
-
-Top N value
+- Run directory
+- Top N value
 
 Output
 
 Top isotopes ranked by:
 
-∣
-log
-⁡
-10
-(
-𝑋
-𝑓
-𝑋
-𝑖
-)
-∣
-	​
+$$|log(\frac{X_f}{X_i})|$$
+​
 
-log
-10
-	​
-
-(
-X
-i
-	​
-
-X
-f
-	​
-
-	​
-
-)
-	​
-
-Purpose
-
-Identifies isotopes most sensitive to nuclear processing.
+Purpose: Identifies isotopes most sensitive to nuclear processing.
 
 Useful for:
 
-Observational diagnostics
+- Observational diagnostics
 
-Targeted sensitivity studies
+- Targeted sensitivity studies
 
-5.5 compare_runs_isotope.py
+## 5.5 `compare_runs_isotope.py`
 Input
 
-Isotope name
+- Isotope name
 
-Multiple runs
+- Multiple runs
 
 Output
 
 Abundance vs rate factor curve
 
-Physics
+Slope gives sensitivity coefficient $\alpha$
 
-Plots:
-
-𝑋
-𝑖
-(
-𝑓
-)
-X
-i
-	​
-
-(f)
-
-where 
-𝑓
-f is rate multiplication factor.
-
-Slope gives:
-
-𝛼
-=
-𝑑
-log
-⁡
-𝑋
-𝑖
-𝑑
-log
-⁡
-𝑟
-α=
-dlogr
-dlogX
-i
-	​
-
-	​
-
-
-Sensitivity coefficient.
-
-5.6 compare_A_less_than_40.py
+## 5.6 `compare_A_less_than_40.py`
 Input
 
-Multiple runs
+- Multiple runs
 
-Isotopes with 
-𝐴
-<
-40
-A<40
+- Isotopes with $A<40$ by default but can be changed
 
 Output
 
 Multi-isotope normalized comparison
 
-Purpose
-
-Shows collective response of light nuclei.
+Purpose: Shows collective response of light nuclei.
 
 Distinguishes:
 
-CO vs ONe nova signatures
+- CO vs ONe nova signatures
 
-Global structural shifts
+- Global structural shifts
 
-5.7 plot_flux_snapshot.py
+## 5.7 `plot_flux_snapshot.py`
 Input
 
-flux_XXXX.DAT
+`flux_XXXX.DAT`
 
 Output
 
-Dominant reaction fluxes at given timestep
+- Dominant reaction fluxes at given timestep
 
-Physics
-
-Flux:
-
-𝐹
-𝑗
-=
-𝜌
-𝑁
-𝐴
-⟨
-𝜎
-𝑣
-⟩
-𝑌
-𝑎
-𝑌
-𝑏
-F
-j
-	​
-
-=ρN
-A
-	​
-
-⟨σv⟩Y
-a
-	​
-
-Y
-b
-	​
-
-
-Represents instantaneous reaction flow.
+- Represents instantaneous reaction flow.
 
 Identifies:
 
-Burning regime
+- Burning regime
 
-Dominant reaction channels
+- Dominant reaction channels
 
-Active nuclear pathways
+- Active nuclear pathways
 
-5.8 integrate_flux_over_run.py
+in current snapshot
+
+## 5.8 `integrate_flux_over_run.py`
 Input
 
 All flux files in run
@@ -622,228 +302,71 @@ Output
 
 Ranked reactions by:
 
-∫
-𝐹
-𝑗
-𝑑
-𝑡
-∫F
-j
-	​
+$$\phi = \int F_j dt$$
 
-dt
-Purpose
-
-Measures total material processed through each reaction.
+Purpose: Measures total material processed through each reaction.
 
 Identifies:
 
-Structurally important reactions
+- Structurally important reactions
 
-Dominant nucleosynthesis pathways
+- Dominant nucleosynthesis pathways
 
-5.9 flux_isotope_io.py
+## 5.9 `flux_isotope_io.py`
 
 Utility for:
 
-Parsing flux files
+- Parsing flux files
 
-Mapping reactions
+- Mapping reactions
 
-Aggregating flows by isotope
+- Aggregating flows by isotope
 
 Foundation for:
 
-Reaction importance ranking
+- Reaction importance ranking
 
-Integrated flow comparison
+- Integrated flow comparison
 
-6. Sensitivity Study Workflow
+# 6. Sensitivity Study Workflow
 
-Identify dominant reactions via integrated flux.
+1. Identify dominant reactions via integrated flux.
 
-Multiply rate by factors:
+2. Multiply rate by factors: $0.01$, $0.1$, $2$, $10$, $100$
 
-0.01, 0.1, 2, 10, 100
+3. Run PPN.
 
-Run PPN.
+4. Compare abundances to baseline.
 
-Compare abundances to baseline.
+5. Extract sensitivity slopes.
 
-Extract sensitivity slopes.
+6. Construct uncertainty tables.
 
-Construct uncertainty tables.
+Inspired by: Iliadis et al. (2002) & Longland Monte Carlo rate analysis (2010)
 
-Inspired by:
+# 7. Future Extensions
 
-Iliadis et al.
+- Monte Carlo rate sampling
 
-Longland Monte Carlo rate analysis
+- Lognormal uncertainty propagation
 
-7. Future Extensions
+- Error band visualization
 
-Monte Carlo rate sampling
+- Reaction family grouping
 
-Lognormal uncertainty propagation
-
-Error band visualization
-
-Reaction family grouping
-
-Network flow visualization
-
-8. Core Mathematical Summary
-
-Network equation:
-
-𝑑
-𝑌
-𝑖
-𝑑
-𝑡
-=
-∑
-𝑗
-𝑁
-𝑖
-𝑗
-𝐹
-𝑗
-dt
-dY
-i
-	​
-
-	​
-
-=
-j
-∑
-	​
-
-N
-ij
-	​
-
-F
-j
-	​
+- Network flow visualization
 
 
-Flux term:
-
-𝐹
-𝑗
-=
-𝜌
-𝑁
-𝐴
-⟨
-𝜎
-𝑣
-⟩
-𝑌
-𝑎
-𝑌
-𝑏
-F
-j
-	​
-
-=ρN
-A
-	​
-
-⟨σv⟩Y
-a
-	​
-
-Y
-b
-	​
-
-
-Rate coefficient:
-
-𝑁
-𝐴
-⟨
-𝜎
-𝑣
-⟩
-=
-exp
-⁡
-(
-𝑎
-0
-+
-𝑎
-1
-𝑇
-−
-1
-+
-𝑎
-2
-𝑇
-−
-1
-/
-3
-+
-…
- 
-)
-N
-A
-	​
-
-⟨σv⟩=exp(a
-0
-	​
-
-+a
-1
-	​
-
-T
-−1
-+a
-2
-	​
-
-T
-−1/3
-+…)
-
-Sensitivity slope:
-
-𝛼
-=
-𝑑
-log
-⁡
-𝑋
-𝑑
-log
-⁡
-𝑟
-α=
-dlogr
-dlogX
-	​
-
-9. Scientific Goal
+# 9. Scientific Goal
 
 This framework enables:
 
-Reproduction of classical nova sensitivity studies
+- Reproduction of classical nova sensitivity studies
 
-Extension using modern reaction rates
+- Extension using modern reaction rates
 
-Statistical uncertainty quantification
+- Statistical uncertainty quantification
 
-Direct comparison to observational nova abundances
+- Direct comparison to observational nova abundances
 
-Foundation for PhD-level publication work
+- Foundation for PhD-level publication work
